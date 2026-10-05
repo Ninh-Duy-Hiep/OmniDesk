@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/OmniDesk.API/obj
+/OmniDesk.Application/obj
+/OmniDesk.Domain/obj
+/OmniDesk.Infrastructure/obj
+/.vs
+*.user
