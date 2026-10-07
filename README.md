@@ -6,41 +6,102 @@ Dự án Backend cho hệ thống OmniDesk, được xây dựng trên nền t�
 
 ```text
 OmniDesk/
-├── OmniDesk.Domain/                                      # [Lõi trung tâm] Không phụ thuộc thư viện ngoại vi
-│   ├── Common/                                           # BaseEntity, BaseAuditableEntity, ValueObject
-│   ├── Entities/                                         # User, Desk, Booking
-│   ├── Enums/                                            # UserRole, DeskStatus, BookingStatus
-│   └── Exceptions/                                       # DomainException (vi phạm quy tắc nghiệp vụ lõi)
+├── OmniDesk.Domain/                                    # [Core] Lõi nghiệp vụ độc lập, không phụ thuộc tầng khác
+│   ├── Common/                                         # Entity cơ sở, Auditable, Domain Events
+│   │   ├── BaseEntity.cs
+│   │   └── BaseAuditableEntity.cs
+│   ├── Entities/                                       # Thực thể nghiệp vụ (User, Desk, Message, ...)
+│   │   └── User.cs
+│   ├── Enums/                                          # Kiểu liệt kê trạng thái, vai trò
+│   │   └── UserRole.cs
+│   └── Exceptions/                                     # Exception nghiệp vụ riêng của Domain
+│       └── DomainException.cs
 │
-├── OmniDesk.Application/                                 # [Orchestration] Điều phối nghiệp vụ, chia theo Feature CQRS[cite: 1, 2]
-│   ├── Common/                                           # Thành phần dùng chung toàn tầng Application
-│   │   ├── Behaviors/                                    # MediatR Pipeline: ValidationBehavior, LoggingBehavior
-│   │   ├── Exceptions/                                   # ValidationException, NotFoundException
-│   │   └── Models/                                       # PagedResult<T>, Result<T>
-│   ├── Interfaces/                                       # Cổng giao tiếp ra ngoài (Ports): IApplicationDbContext, IEmailSender
-│   └── Modules/ (hoặc Features/)                         # Đóng gói theo lát cắt chức năng (Vertical Slice)
-│       ├── Users/
-│       │   ├── Commands/                                 # Write operations: CreateUser, UpdateUser, DeleteUser[cite: 1, 2]
-│       │   │   └── CreateUser/
-│       │   │       ├── CreateUserCommand.cs
-│       │   │       ├── CreateUserCommandHandler.cs
-│       │   │       └── CreateUserCommandValidator.cs
-│       │   └── Queries/                                  # Read-only operations: GetAllUsers, GetUserById[cite: 1, 2]
-│       │       └── GetUserById/
-│       │           ├── GetUserByIdQuery.cs
-│       │           └── GetUserByIdQueryHandler.cs
-│       ├── ...
+├── OmniDesk.Application/                               # [Core] Điều phối Use Cases, CQRS và quy tắc ứng dụng
+│   ├── Common/                                         # Thành phần dùng chung nội bộ Application
+│   │   ├── Behaviors/                                  # MediatR Pipeline Behaviors (Cross-cutting concerns)
+│   │   │   ├── LoggingBehavior.cs                      # Ghi log request/response
+│   │   │   ├── PerformanceBehavior.cs                  # Cảnh báo request chạy chậm
+│   │   │   └── ValidationBehavior.cs                   # Tự động bắt lỗi FluentValidation trước khi vào Handler
+│   │   ├── Exceptions/                                 # App-level exceptions (AppValidationException, BusinessException, NotFoundException)
+│   │   │   ├── BusinessException.cs
+│   │   │   └── AppValidationException.cs
+│   │   └── Models/                                     # Định dạng đóng gói dữ liệu và Response chuẩn
+│   │       ├── ApiResponse.cs                          # Wrapper response chuẩn cho toàn hệ thống
+│   │       ├── ApiError.cs                             # Chi tiết lỗi theo từng field
+│   │       └── Pagination/                             # Models phân trang
+│   │           ├── IPagination.cs
+│   │           ├── PagePagination.cs                   # Phân trang offset-based
+│   │           └── CursorPagination.cs                 # Phân trang cursor-based
+│   ├── DTOs/                                           # Data Transfer Objects chia sẻ
+│   │   └── UserDtos.cs
+│   ├── Interfaces/                                     # Contracts trừu tượng cho hạ tầng triển khai
+│   │   ├── IApplicationDbContext.cs                    # Trừu tượng DbContext
+│   │   ├── IJwtTokenGenerator.cs                       # Hợp đồng phát sinh JWT
+│   │   └── Services/                                   # Giao diện dịch vụ ngoại vi & Realtime
+│   │       └── INotificationHubService.cs              # Hợp đồng gửi thông báo socket sang Client
+│   └── Modules/                                        # Phân cụm Use Cases theo Domain Module (Feature Folders)
+│       ├── Auth/                                       # Module xác thực
+│       │   ├── Commands/
+│       │   │   └── Login/
+│       │   │       ├── LoginCommand.cs
+│       │   │       ├── LoginCommandHandler.cs
+│       │   │       └── LoginCommandValidator.cs
+│       │   └── Queries/
+│       └── Users/                                      # Module người dùng
+│           ├── Commands/
+│           │   ├── CreateUser/
+│           │   │   ├── CreateUserCommand.cs
+│           │   │   ├── CreateUserCommandHandler.cs
+│           │   │   └── CreateUserCommandValidator.cs
+│           │   ├── DeleteUser/
+│           │   │   ├── DeleteUserCommand.cs
+│           │   │   └── DeleteUserCommandHandler.cs
+│           │   └── UpdateUser/
+│           │       ├── UpdateUserCommand.cs
+│           │       ├── UpdateUserCommandHandler.cs
+│           │       └── UpdateUserCommandValidator.cs
+│           └── Queries/
+│               ├── GetAllUsers/
+│               │   ├── GetAllUsersQuery.cs
+│               │   └── GetAllUsersQueryHandler.cs
+│               └── GetUserById/
+│                   ├── GetUserByIdQuery.cs
+│                   └── GetUserByIdQueryHandler.cs
 │
-├── OmniDesk.Infrastructure/                              # [Hạ tầng kỹ thuật] Triển khai database, cache, third-party[cite: 1]
-│   ├── Data/
-│   │   ├── Configurations/                               # Fluent API mapping cho từng Entity[cite: 1]
-│   │   ├── Context/                                      # AppDbContext kế thừa IApplicationDbContext
-│   │   └── Migrations/                                   # File migration của EF Core[cite: 1]
-│   └── Services/                                         # JwtTokenGenerator, BCryptPasswordHasher, SmtpEmailService[cite: 1]
+├── OmniDesk.Infrastructure/                            # [Outer] Hiện thực hóa kỹ thuật Database & Dịch vụ ngoài
+│   ├── Data/                                           # Tầng truy xuất dữ liệu (EF Core)
+│   │   ├── Configurations/                             # Cấu hình EntityTypeConfiguration (Fluent API)
+│   │   │   └── UserConfiguration.cs
+│   │   └── Context/                                    # DbContext kế thừa IApplicationDbContext
+│   │       └── AppDbContext.cs
+│   ├── Migrations/                                     # EF Core Migrations
+│   ├── Realtime/                                       # Triển khai tầng gửi tin SignalR phía Infrastructure
+│   │   └── NotificationHubService.cs
+│   └── Services/                                       # Triển khai các dịch vụ kỹ thuật[cite: 1]
+│       └── JwtTokenGenerator.cs
 │
-└── OmniDesk.API/                                         # [Presentation] Nhận HTTP request, mỏng tối đa[cite: 1]
-    ├── Controllers/                                      # Gọi ISender để dispatch Command/Query[cite: 1]
-    ├── Extensions/                                       # DependencyInjection, Swagger, Cors, Authentication
-    ├── Middlewares/                                      # GlobalExceptionHandlingMiddleware[cite: 1]
-    ├── Program.cs                                        # Đăng ký DI và pipeline[cite: 1]
-    └── appsettings.json                                  # Connection strings và config hệ thống[cite: 1]
+└── OmniDesk.API/                                       # [Outer] Điểm tiếp nhận request từ Client (Presentation Layer)[cite: 1]
+    ├── Controllers/                                    # API Endpoints tiếp nhận HTTP Request[cite: 1]
+    │   ├── BaseApiController.cs                        # Controller cơ sở trợ giúp trả về ApiResponse chuẩn
+    │   ├── AuthController.cs
+    │   └── UsersController.cs
+    ├── Extensions/                                     # Extension methods cấu hình DI, Swagger, Auth, DB[cite: 1]
+    │   ├── AuthenticationExtensions.cs
+    │   ├── CorsExtensions.cs
+    │   ├── DatabaseExtensions.cs
+    │   ├── MediatRExtensions.cs
+    │   ├── SerilogExtensions.cs
+    │   └── SwaggerExtensions.cs
+    ├── Filters/                                        # Action/Result Filters chuẩn hóa Response & Validation
+    │   └── ApiResponseFilter.cs                        # (Tùy chọn) Bọc response tự động
+    ├── Hubs/                                           # SignalR Hubs phục vụ kết nối WebSocket thời gian thực
+    │   ├── NotificationHub.cs
+    │   └── ChatHub.cs
+    ├── Middlewares/                                    # Custom Middlewares xử lý request pipeline[cite: 1]
+    │   ├── ExceptionHandlingMiddleware.cs              # Bắt toàn bộ Exception và trả ra payload chuẩn JSON
+    │   └── TraceIdMiddleware.cs                        # Gán TraceId xuyên suốt request
+    ├── Logs/                                           # Thư mục chứa log định kỳ (Serilog)
+    ├── Properties/                                     # Cấu hình launchSettings.json[cite: 1]
+    ├── appsettings.json                                # Cấu hình ConnectionString, JWT Secret, v.v.[cite: 1]
+    └── Program.cs                                      # Entry point, đăng ký DI và Pipeline middleware[cite: 1]
