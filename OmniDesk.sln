@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36511.14 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmniDesk.Application", "OmniDesk.Application\OmniDesk.Application.csproj", "{07B62DC4-1ED3-4072-BFCC-538C65328E7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmniDesk.Domain", "OmniDesk.Domain\OmniDesk.Domain.csproj", "{3F875922-B669-44E3-B202-9B9B2F164F43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmniDesk.Infrastructure", "OmniDesk.Infrastructure\OmniDesk.Infrastructure.csproj", "{1D832C58-40DF-4697-9A65-7D960F2342DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmniDesk.API", "OmniDesk.API\OmniDesk.API.csproj", "{5E0746CD-091D-40E1-A8CC-5D92EFB41CB1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{07B62DC4-1ED3-4072-BFCC-538C65328E7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07B62DC4-1ED3-4072-BFCC-538C65328E7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07B62DC4-1ED3-4072-BFCC-538C65328E7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07B62DC4-1ED3-4072-BFCC-538C65328E7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F875922-B669-44E3-B202-9B9B2F164F43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F875922-B669-44E3-B202-9B9B2F164F43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F875922-B669-44E3-B202-9B9B2F164F43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F875922-B669-44E3-B202-9B9B2F164F43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D832C58-40DF-4697-9A65-7D960F2342DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D832C58-40DF-4697-9A65-7D960F2342DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D832C58-40DF-4697-9A65-7D960F2342DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D832C58-40DF-4697-9A65-7D960F2342DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E0746CD-091D-40E1-A8CC-5D92EFB41CB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E0746CD-091D-40E1-A8CC-5D92EFB41CB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E0746CD-091D-40E1-A8CC-5D92EFB41CB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E0746CD-091D-40E1-A8CC-5D92EFB41CB1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CEE4B910-3A32-47B9-975D-F769D64DED88}
+	EndGlobalSection
+EndGlobal
